@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "strict": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "rootDir": ".",
+    "baseUrl": ".",
+    "paths": {
+      "@domain/*": ["final-integration/src/domain/*"],
+      "@app/*": ["final-integration/src/application/*"],
+      "@infra/*": ["final-integration/src/infrastructure/*"],
+      "@interface/*": ["final-integration/src/interface/*"]
+    },
+    "types": ["node"]
+  },
+  "include": ["final-integration/src", "modules", "tests", "scripts"],
+  "exclude": ["node_modules", "dist"]
+}
