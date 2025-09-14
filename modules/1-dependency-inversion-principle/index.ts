@@ -27,10 +27,7 @@ export class OrderService {
   createOrder(name: string) {
     const order = new Order(crypto.randomUUID(), name);
 
-    this._mailSender.sendGmailMessage(
-      'customer@example.com',
-      `New order created: ${name}`,
-    );
+    this._mailSender.sendGmailMessage('customer@example.com', `New order created: ${name}`);
     this._queue.sendMessage(JSON.stringify(order));
   }
 }
