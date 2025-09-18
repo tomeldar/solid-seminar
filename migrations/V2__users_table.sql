@@ -7,5 +7,5 @@ CREATE TABLE IF NOT EXISTS users(
   deleted_at TIMESTAMP
 );
 
-CREATE UNIQUE CONSTRAINT IF NOT EXISTS uq_users_username ON users(username, deleted_at);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_users_username ON users(username) WHERE deleted_at IS NULL;
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
