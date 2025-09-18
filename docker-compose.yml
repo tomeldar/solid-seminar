@@ -1,0 +1,28 @@
+version: '3.9'
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${DB_USER:-identity}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-identity}
+      POSTGRES_DB: ${DB_NAME:-identity}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-identity} -d ${DB_NAME:-identity}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+  flyway:
+    image: flyway/flyway:10-alpine
+    command: -configFiles=/flyway/conf/flyway.conf migrate
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./migrations:/flyway/sql
+      - ./flyway/flyway.conf:/flyway/conf/flyway.conf:ro
+volumes:
+  dbdata:
