@@ -1,33 +1,37 @@
-import { initSnapshotTestManager, SnapshotTestManager } from 'src/infrastructure/testing/test-db.snapshot';
+import { setupDatabaseSnapshot } from '../../../infrastructure/testing/test-db.snapshot';
 import { PgUserRepository } from './user.repository.pg';
-import { Kysely } from 'kysely';
+import { Kysely, PostgresDialect } from 'kysely';
+import { DB } from '../../../infrastructure/database/kysely';
+import { Pool } from 'pg';
 
 describe('PgUserRepository (pg)', () => {
-  let snapshotManager: SnapshotTestManager;
-  let db: Kysely<any>; // replace with typed DB once repository implemented
-  let currentIsolated: { dispose: () => Promise<void> } | null = null;
+  let db: Kysely<DB>;
+  let repo: PgUserRepository;
+  let snapshot: Awaited<ReturnType<typeof setupDatabaseSnapshot>>;
+  let pgContainer: Awaited<ReturnType<typeof setupDatabaseSnapshot>>['pgContainer'];
 
   beforeAll(async () => {
-    snapshotManager = await initSnapshotTestManager();
+    snapshot = await setupDatabaseSnapshot();
+    ({ pgContainer } = snapshot);
   });
 
   afterAll(async () => {
-    await snapshotManager.shutdown();
+    await pgContainer.stop();
   });
 
   beforeEach(async () => {
-    const isolated = await snapshotManager.getIsolatedDb();
-    currentIsolated = isolated;
-    db = isolated.kysely;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const repo = new PgUserRepository(db);
+    await pgContainer.restoreSnapshot();
+    db = new Kysely<DB>({
+      dialect: new PostgresDialect({
+        pool: new Pool(snapshot.connectionConfig),
+      }),
+    });
+
+    repo = new PgUserRepository(db);
   });
 
   afterEach(async () => {
-    if (currentIsolated) {
-      await currentIsolated.dispose();
-      currentIsolated = null;
-    }
+    await db.destroy();
   });
 
   it.todo('should save a new user');

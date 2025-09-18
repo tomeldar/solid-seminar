@@ -2,12 +2,12 @@ import { Kysely } from 'kysely';
 import { UserEntity } from 'src/domain/entities/user.entity';
 import { UUID } from 'src/domain/value-objects/uuid.vo';
 import type { IUserRepository } from '../../../domain/ports/user.repository';
+import { DB } from '../../../infrastructure/database/kysely';
 
 export class PgUserRepository implements IUserRepository {
-  constructor(private readonly db: Kysely<any>) {}
+  constructor(private readonly db: Kysely<DB>) {}
 
-  getById(id: UUID): Promise<UserEntity | null> {
-    void id;
+  async getById(id: UUID): Promise<UserEntity | null> {
     return Promise.reject(new Error('Method not implemented.'));
   }
 
