@@ -29,13 +29,15 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  getUsers(): UserResponseDto[] {
-    throw new Error('Method not implemented.');
+  async getUsers(): Promise<UserResponseDto[]> {
+    return await this.userService.getUsers();
   }
 
   @Post()
-  createUser(@Body() createUserDto: CreateUserRequestDto): UserResponseDto {
-    throw new Error('Method not implemented.');
+  async createUser(@Body() createUserDto: CreateUserRequestDto): Promise<UserResponseDto> {
+    let response = await this.userService.createUser(createUserDto.email, createUserDto.username);
+    console.log(response);
+    return response;
   }
 
   @Get(':id')
